@@ -11,11 +11,29 @@ import com.google.android.material.tabs.TabLayoutMediator
 import hr.foi.rmai.memento.adapters.MainPagerAdapter
 
 class MainActivity : AppCompatActivity() {
+    lateinit var tabLayout: TabLayout
+    lateinit var viewPager2: ViewPager2
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
         setupQualityOfLifeImprovements()
+
+        setupTabNavigation()
+    }
+
+    private fun setupTabNavigation() {
+        tabLayout = findViewById(R.id.tabs)
+        viewPager2 = findViewById(R.id.viewpager)
+
+        val mainPagerAdapter = MainPagerAdapter(supportFragmentManager, lifecycle)
+        viewPager2.adapter = mainPagerAdapter
+
+        TabLayoutMediator(tabLayout, viewPager2) { tab, position ->
+            tab.setText(mainPagerAdapter.titleList[position])
+            tab.setIcon(mainPagerAdapter.iconList[position])
+        }.attach()
     }
 
     private fun setupQualityOfLifeImprovements() {
