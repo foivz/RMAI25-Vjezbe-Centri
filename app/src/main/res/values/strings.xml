@@ -6,4 +6,8 @@
     <string name="tasks_pending">Pending</string>
     <string name="tasks_completed">Completed</string>
     <string name="news">News</string>
+    <string name="task_name">Name</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="course">Course</string>
 </resources>
