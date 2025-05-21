@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -31,7 +32,11 @@ class PendingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         recyclerView = view.findViewById(R.id.rv_pending_tasks)
-        recyclerView.adapter = TasksAdapter(MockDataLoader.getDemoData())
+
+        val tasks = tasksDao.getAllTasks(false)
+        recyclerView.adapter = TasksAdapter(tasks.toMutableList()) { taskId ->
+            parentFragmentManager.setFragmentResult("task_completed", bundleOf("task_id" to taskId))
+        }
         recyclerView.layoutManager = LinearLayoutManager(view.context)
 
         btnCreateTask = view.findViewById(R.id.fab_pending_fragment_create_task)
