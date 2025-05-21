@@ -9,6 +9,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import hr.foi.rmai.memento.adapters.MainPagerAdapter
+import hr.foi.rmai.memento.database.TasksDatabase
 import hr.foi.rmai.memento.helpers.MockDataLoader
 
 class MainActivity : AppCompatActivity() {
@@ -20,6 +21,9 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
         setupQualityOfLifeImprovements()
+
+        TasksDatabase.buildInstance(this)
+        MockDataLoader.loadMockData()
 
         setupTabNavigation()
     }
