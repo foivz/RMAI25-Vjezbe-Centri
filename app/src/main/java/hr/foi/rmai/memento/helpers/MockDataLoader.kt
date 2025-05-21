@@ -6,18 +6,18 @@ import java.util.Date
 
 object MockDataLoader {
     fun getMockCourses(): List<TaskCourse> = listOf(
-        TaskCourse("RMAI", "#3449eb"),
-        TaskCourse("RWA", "#d0eb34"),
-        TaskCourse("EP", "#eb7134")
+        TaskCourse(0, "RMAI", "#3449eb"),
+        TaskCourse(1, "RWA", "#d0eb34"),
+        TaskCourse(2, "EP", "#eb7134")
     )
 
     fun getDemoData(): MutableList<Task> {
         val courses = getMockCourses()
 
         return mutableListOf(
-            Task("Submit project proposal", Date(), courses[0], false),
-            Task("Prepare for exercises", Date(), courses[0], false),
-            Task("Work on 1st homework", Date(), courses[1], false),
+            Task(0, "Submit project proposal", Date(), 0, false),
+            Task(1, "Prepare for exercises", Date(), 0, false),
+            Task(2, "Work on 1st homework", Date(), 1, false),
         )
     }
 }
