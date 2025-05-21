@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import hr.foi.rmai.memento.R
 import hr.foi.rmai.memento.adapters.TasksAdapter
+import hr.foi.rmai.memento.database.TasksDatabase
 import hr.foi.rmai.memento.helpers.MockDataLoader
 import hr.foi.rmai.memento.helpers.NewTaskDialogHelper
 
@@ -19,14 +20,12 @@ class PendingFragment : Fragment() {
     lateinit var recyclerView: RecyclerView
     lateinit var btnCreateTask: FloatingActionButton
 
+    val tasksDao = TasksDatabase.getInstance().getTasksDao()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        val mockTasks = MockDataLoader.getDemoData()
-        mockTasks.forEach { task -> Log.i("MOCK_TASKS", task.name)}
-
         return inflater.inflate(R.layout.fragment_pending, container, false)
     }
 
@@ -49,7 +48,10 @@ class PendingFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setView(newTaskDialogView)
             .setPositiveButton("Create a task") { _, _ ->
-                val newTask = dialogHelper.buildTask()
+                var newTask = dialogHelper.buildTask()
+
+                val newTaskId = tasksDao.insertTask(newTask)[0]
+                newTask = tasksDao.getTask(newTaskId.toInt())
 
                 val tasksAdapter = recyclerView.adapter
                         as TasksAdapter
@@ -57,7 +59,8 @@ class PendingFragment : Fragment() {
             }
             .show()
 
-        dialogHelper.populateSpinner(MockDataLoader.getMockCourses())
+        val courses = TasksDatabase.getInstance().getTaskCoursesDao().getAllCourses()
+        dialogHelper.populateSpinner(courses)
         dialogHelper.activateDateTimeListeners()
     }
 }
