@@ -7,6 +7,7 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import hr.foi.rmai.memento.database.TasksDatabase
 import hr.foi.rmai.memento.helpers.DateConverter
 import java.util.Date
 
@@ -27,6 +28,8 @@ data class Task(
     @ColumnInfo(name = "course_id", index = true) val courseId: Int,
     val completed: Boolean
 ) {
-    @Ignore
-    lateinit var course: TaskCourse
+    @delegate:Ignore
+    val course: TaskCourse by lazy {
+        TasksDatabase.getInstance().getTaskCoursesDao().getCourseById(courseId)
+    }
 }
