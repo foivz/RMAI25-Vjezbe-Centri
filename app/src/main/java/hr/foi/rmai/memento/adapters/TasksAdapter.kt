@@ -40,7 +40,7 @@ class TasksAdapter(val tasksList: MutableList<Task>, private val onTaskCompleted
 
                 if (onTaskCompleted != null) {
                     alertDialogBuilder.setPositiveButton("Mark as completed") { _, _ ->
-                        val completedTask = tasksList[adapterPosition]
+                        var completedTask = tasksList[adapterPosition]
                         completedTask.completed = true
                         TasksDatabase.getInstance().getTasksDao().insertTask(completedTask)
                         removeTaskFromList()
