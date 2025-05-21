@@ -11,4 +11,30 @@ import hr.foi.rmai.memento.entities.TaskCourse
 abstract class TasksDatabase : RoomDatabase() {
     abstract fun getTasksDao(): TasksDAO
     abstract fun getTaskCoursesDao(): TaskCoursesDAO
+
+    companion object {
+        @Volatile
+        private var implementedInstance: TasksDatabase? = null
+
+        fun getInstance(): TasksDatabase {
+            if (implementedInstance == null) {
+                throw NullPointerException("Database instance has not yet been created!")
+            }
+            return implementedInstance!!
+        }
+
+        fun buildInstance(context: Context) {
+            if (implementedInstance == null) {
+                val instanceBuilder = Room.databaseBuilder(
+                    context,
+                    TasksDatabase::class.java,
+                    "tasks.db"
+                )
+                instanceBuilder.fallbackToDestructiveMigration()
+                instanceBuilder.allowMainThreadQueries()
+                instanceBuilder.build()
+                implementedInstance = instanceBuilder.build()
+            }
+        }
+    }
 }
