@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "hr.foi.rmai.memento"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -57,4 +57,5 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:3.0.0")
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
     implementation("com.squareup.picasso:picasso:2.8")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
 }

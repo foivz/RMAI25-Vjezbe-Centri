@@ -1,9 +1,11 @@
 package hr.foi.rmai.memento.adapters
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.SurfaceView
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.toColorInt
@@ -11,7 +13,9 @@ import androidx.recyclerview.widget.RecyclerView
 import hr.foi.rmai.memento.R
 import hr.foi.rmai.memento.database.TasksDatabase
 import hr.foi.rmai.memento.entities.Task
+import hr.foi.rmai.memento.services.TaskTimerService
 import java.text.SimpleDateFormat
+import java.util.Date
 
 class TasksAdapter(val tasksList: MutableList<Task>, private val onTaskCompleted: ((taskId: Int) -> Unit)? = null) : RecyclerView.Adapter<TasksAdapter.TaskViewHolder>() {
     inner class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -20,11 +24,31 @@ class TasksAdapter(val tasksList: MutableList<Task>, private val onTaskCompleted
         private val taskCourseColor: SurfaceView
 
         private val sdf = SimpleDateFormat("dd. MM. yyyy. HH:mm")
+        private val taskTimer: ImageView = view.findViewById(R.id.iv_task_timer)
+        private var isTimerActive = false
 
         init {
             taskName = view.findViewById(R.id.tv_task_name)
             taskDueDate = view.findViewById(R.id.tv_task_due_date)
             taskCourseColor = view.findViewById(R.id.sv_task_course_color)
+
+            view.setOnClickListener {
+                if (Date() < tasksList[adapterPosition].dueDate) {
+                    val intent = Intent(view.context, TaskTimerService::class.java).apply {
+                        putExtra("task_id", tasksList[adapterPosition].id.toLong())
+                    }
+                    isTimerActive = !isTimerActive
+                    if (isTimerActive) {
+                        taskTimer.visibility = View.VISIBLE
+                    } else {
+                        intent.putExtra("cancel", true)
+                        taskTimer.visibility = View.GONE
+                    }
+                    view.context.startService(intent)
+                } else if (taskTimer.visibility == View.VISIBLE) {
+                    taskTimer.visibility = View.GONE
+                }
+            }
 
             view.setOnLongClickListener {
                 val currentTask = tasksList[adapterPosition]
