@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var viewPager2: ViewPager2
     lateinit var navView: NavigationView
     lateinit var navDrawerLayout: DrawerLayout
+    lateinit var onSharedPreferencesChangeListener: OnSharedPreferenceChangeListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +44,10 @@ class MainActivity : AppCompatActivity() {
             NotificationManager.IMPORTANCE_HIGH)
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
+
+        PreferenceManager.getDefaultSharedPreferences(this)?.let { pref ->
+            PreferencesActivity.switchDarkMode(pref.getBoolean("preference_dark_mode", false))
+        }
     }
 
     private fun setupTabNavigation() {
@@ -82,6 +87,10 @@ class MainActivity : AppCompatActivity() {
                     return@setOnMenuItemClickListener true
                 }
         }
+
+        val tasksCounterItem = navView.menu.add(2, 0, 0, "")
+        attachMenuItemToTasksCreatedCount(tasksCounterItem)
+
         navView.menu
             .add(3, 0, 0, getString(R.string.settings_menu_item))
             .setIcon(R.drawable.baseline_app_settings_alt_24)
@@ -92,6 +101,25 @@ class MainActivity : AppCompatActivity() {
 
                 return@setOnMenuItemClickListener true
             }
+    }
+
+    private fun attachMenuItemToTasksCreatedCount(tasksCounterItem: MenuItem) {
+        val sharedPreferences = getSharedPreferences("tasks_preferences", Context.MODE_PRIVATE)
+
+        onSharedPreferencesChangeListener = OnSharedPreferenceChangeListener { _, key ->
+            if (key == "tasks_created_counter") {
+                updateTasksCreatedCounter(tasksCounterItem)
+            }
+        }
+
+        sharedPreferences.registerOnSharedPreferenceChangeListener(onSharedPreferencesChangeListener)
+        updateTasksCreatedCounter(tasksCounterItem)
+    }
+
+    private fun updateTasksCreatedCounter(tasksCounterItem: MenuItem) {
+        val sharedPreferences = getSharedPreferences("tasks_preferences", Context.MODE_PRIVATE)
+
+        tasksCounterItem.title = "Tasks created ${sharedPreferences.getInt("tasks_created_counter", 0)}"
     }
 
     private fun setupQualityOfLifeImprovements() {
