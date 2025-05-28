@@ -38,6 +38,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.preference)
     val room_version = "2.7.1"
 
     ksp("androidx.room:room-compiler:$room_version")
