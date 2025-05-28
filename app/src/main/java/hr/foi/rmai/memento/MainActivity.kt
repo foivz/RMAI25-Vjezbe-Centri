@@ -1,11 +1,15 @@
 package hr.foi.rmai.memento
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import hr.foi.rmai.memento.adapters.MainPagerAdapter
@@ -15,6 +19,8 @@ import hr.foi.rmai.memento.helpers.MockDataLoader
 class MainActivity : AppCompatActivity() {
     lateinit var tabLayout: TabLayout
     lateinit var viewPager2: ViewPager2
+    lateinit var navView: NavigationView
+    lateinit var navDrawerLayout: DrawerLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,11 +32,18 @@ class MainActivity : AppCompatActivity() {
         MockDataLoader.loadMockData()
 
         setupTabNavigation()
+
+        val channel = NotificationChannel ("task-timer", "Task Timer Channel",
+            NotificationManager.IMPORTANCE_HIGH)
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 
     private fun setupTabNavigation() {
         tabLayout = findViewById(R.id.tabs)
         viewPager2 = findViewById(R.id.viewpager)
+        navView = findViewById(R.id.nav_view)
+        navDrawerLayout = findViewById(R.id.nav_drawer_layout)
 
         val mainPagerAdapter = MainPagerAdapter(supportFragmentManager, lifecycle)
         viewPager2.adapter = mainPagerAdapter
@@ -39,6 +52,30 @@ class MainActivity : AppCompatActivity() {
             tab.setText(mainPagerAdapter.fragmentItems[position].titleRes)
             tab.setIcon(mainPagerAdapter.fragmentItems[position].iconRes)
         }.attach()
+
+        setupNavigationDrawer(mainPagerAdapter)
+
+        viewPager2.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                navView.menu.getItem(position).isChecked = true
+            }
+        })
+    }
+
+    private fun setupNavigationDrawer(viewPagerAdapter: MainPagerAdapter) {
+        viewPagerAdapter.fragmentItems.withIndex().forEach { (index, fragmentItem) ->
+            navView.menu
+                .add(fragmentItem.titleRes)
+                .setIcon(fragmentItem.iconRes)
+                .setCheckable(true)
+                .setChecked(index == 0)
+                .setOnMenuItemClickListener {
+                    viewPager2.setCurrentItem(index, true)
+                    navDrawerLayout.closeDrawers()
+
+                    return@setOnMenuItemClickListener true
+                }
+        }
     }
 
     private fun setupQualityOfLifeImprovements() {
