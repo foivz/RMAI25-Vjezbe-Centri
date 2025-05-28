@@ -2,12 +2,18 @@ package hr.foi.rmai.memento
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
@@ -76,6 +82,16 @@ class MainActivity : AppCompatActivity() {
                     return@setOnMenuItemClickListener true
                 }
         }
+        navView.menu
+            .add(3, 0, 0, getString(R.string.settings_menu_item))
+            .setIcon(R.drawable.baseline_app_settings_alt_24)
+            .setOnMenuItemClickListener {
+                val intent = Intent(this, PreferencesActivity::class.java)
+                startActivity(intent)
+                navDrawerLayout.closeDrawers()
+
+                return@setOnMenuItemClickListener true
+            }
     }
 
     private fun setupQualityOfLifeImprovements() {
